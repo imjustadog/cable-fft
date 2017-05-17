@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>679</width>
+    <height>675</height>
+   </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>索力计数据采集分析系统</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="MplCanvasWrapper" name="mplCanvas" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>661</width>
+      <height>611</height>
+     </rect>
+    </property>
+    <widget class="QCommandLinkButton" name="cmdlnkbtn_datarfreq">
+     <property name="geometry">
+      <rect>
+       <x>540</x>
+       <y>50</y>
+       <width>111</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>时/频切换</string>
+     </property>
+     <property name="description">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QCommandLinkButton" name="cmdlnkbtn_realrhis">
+     <property name="geometry">
+      <rect>
+       <x>540</x>
+       <y>560</y>
+       <width>111</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>实时显示</string>
+     </property>
+     <property name="description">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QDateEdit" name="dateEdit">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>580</y>
+       <width>110</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_choosedate">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>580</y>
+       <width>54</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>选择日期</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QCheckBox" name="checkBox4">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道4</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox8">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道8</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox1">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道1</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox3">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道3</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox2">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道2</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox5">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道5</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox6">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道6</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox7">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>620</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通道7</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>679</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>设置</string>
+    </property>
+    <addaction name="actionFFT"/>
+    <addaction name="actionPath"/>
+    <addaction name="actionSerial"/>
+    <addaction name="actionNet"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>控制</string>
+    </property>
+    <addaction name="actionConnect"/>
+    <addaction name="actionCut"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+  </widget>
+  <action name="actionFFT">
+   <property name="text">
+    <string>FFT设置</string>
+   </property>
+  </action>
+  <action name="actionPath">
+   <property name="text">
+    <string>路径设置</string>
+   </property>
+  </action>
+  <action name="actionSerial">
+   <property name="text">
+    <string>通道设置</string>
+   </property>
+  </action>
+  <action name="actionOpenSerial">
+   <property name="text">
+    <string>打开串口</string>
+   </property>
+  </action>
+  <action name="actionCloseSerial">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>关闭串口</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>建立连接</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>断开连接</string>
+   </property>
+  </action>
+  <action name="actionNet">
+   <property name="text">
+    <string>网络设置</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplCanvasWrapper</class>
+   <extends>QWidget</extends>
+   <header>mplcanvaswrapper.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
