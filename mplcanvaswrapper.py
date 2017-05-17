@@ -17,12 +17,11 @@ from datetime import timedelta
 from matplotlib.dates import SecondLocator, MinuteLocator, HourLocator, DateFormatter
 from datasender import tcpclient
 
-X_MINUTES = 2
 Y_MAX = 10
 Y_MIN = 1
 INTERVAL = 1
-INTERVAL_COUNT = 1
-MAXCOUNTER = int(X_MINUTES * 60 / INTERVAL)
+INTERVAL_COUNT = 3
+MAXCOUNTER = 48
 N = 8192
 
 
