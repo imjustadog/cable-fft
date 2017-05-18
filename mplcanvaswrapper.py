@@ -17,11 +17,12 @@ from datetime import timedelta
 from matplotlib.dates import SecondLocator, MinuteLocator, HourLocator, DateFormatter
 from datasender import tcpclient
 
+X_MINUTES = 1
 Y_MAX = 10
 Y_MIN = 1
 INTERVAL = 1
-INTERVAL_COUNT = 3
-MAXCOUNTER = 48
+INTERVAL_COUNT = 1
+MAXCOUNTER = int(X_MINUTES * 60 / INTERVAL)
 N = 8192
 
 
@@ -41,8 +42,8 @@ class MplCanvas(FigureCanvas):
         self.ax_freq.set_ylabel('frequency')
         # self.ax_freq.legend()
         # self.ax_freq.set_ylim(Y_MIN, Y_MAX)
-        self.ax_freq.xaxis.set_major_locator(HourLocator([3, 6, 9, 12, 15, 18, 21]))  # every minute is a major locator
-        #self.ax_freq.xaxis.set_minor_locator(SecondLocator([10, 20, 30, 40, 50]))  # every 10 second is a minor locator
+        self.ax_freq.xaxis.set_major_locator(MinuteLocator())  # every minute is a major locator
+        self.ax_freq.xaxis.set_minor_locator(SecondLocator([10, 20, 30, 40, 50]))  # every 10 second is a minor locator
         self.ax_freq.xaxis.set_major_formatter(DateFormatter('%H:%M:%S'))  # tick label formatter
         
         self.fig.subplots_adjust(top=0.92, bottom=0.13, left=0.10, right=0.95)
@@ -107,7 +108,7 @@ class MplCanvas(FigureCanvas):
         if counter >= MAXCOUNTER:
             self.ax_freq.set_xlim(datax[0], datax[-1])
         else:
-            self.ax_freq.set_xlim(datax[0], datax[0]+timedelta(hours=24))
+            self.ax_freq.set_xlim(datax[0], datax[0]+timedelta(minutes=X_MINUTES, seconds=4))
         ticklabels = self.ax_freq.xaxis.get_ticklabels()
         for tick in ticklabels:
             tick.set_rotation(25)
@@ -251,7 +252,6 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.__exit = False
         self.dataX = []
         self.counter = 0
-        self.foldernamelist = []
     
     def showDataorFreq(self):
         if self.canvas.ax_data.get_xlabel() == "time/s":
@@ -281,12 +281,6 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.__exit  = True
 
     def generateData(self):
-
-        filepathym = self.canvas.filepath + str(time.localtime().tm_year) + u'年' + \
-                     os.path.sep + str(time.localtime().tm_mon) + u'月'
-        if os.path.exists(filepathym):
-            self.foldernamelist = os.listdir(filepathym)
-
         while True:
             if self.__exit:
                 break
@@ -309,29 +303,14 @@ class MplCanvasWrapper(QtGui.QWidget):
 
     def readfilename(self):
         flag = False
-        filepathym = self.canvas.filepath + str(time.localtime().tm_year) + u'年' + \
-            os.path.sep + str(time.localtime().tm_mon) + u'月'
-
-        if os.path.exists(filepathym):
-
-            foldernamelisttemp = os.listdir(filepathym)
-            for folder in foldernamelisttemp:
-                if folder not in self.foldernamelist:
-                    flag = True
-                    filepathtime = filepathym + os.path.sep + folder
-            self.foldernamelist = foldernamelisttemp
-
-            if not flag:
-                return False
-
+        filepathyear = self.canvas.filepath + str(time.localtime().tm_year) + u'年'
+        if os.path.exists(filepathyear):
             for x in self.canvas.datalist:
                 if x['enabled']:
                     count = 0
-
+                    flag = True
                     datay = []
-                    path = filepathtime + os.path.sep + '1#' + x['device'] + '.tim'
-                    if not os.path.exists(path):
-                        continue
+                    path = filepathyear + os.path.sep + '1#' + x['device'] + '.tim'
                     fileinfo = os.stat(path)
                     time.localtime(fileinfo.st_ctime)
                     f = open(path, "rb")
