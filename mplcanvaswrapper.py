@@ -367,7 +367,7 @@ class MplCanvasWrapper(QtGui.QWidget):
                     freq = []
                     for i in range(len(rate) - 1):
                         if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 50:
-                            freq.append(i)
+                            freq.append(i + 1)
 
                     if len(freq) >= 2:
                         freq_step2 = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
