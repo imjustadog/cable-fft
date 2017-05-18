@@ -79,6 +79,9 @@ class MplCanvas(FigureCanvas):
         FigureCanvas.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
     
+    def displayhistory(self, year, month, day):
+        print [year, month, day]
+
     def plot_freq(self, datax, counter):
         for x in self.datalist:
             if x['enabled']:
@@ -375,8 +378,8 @@ class MplCanvasWrapper(QtGui.QWidget):
                     else:
                         freq_result = freq[0] * self.canvas.fftfreq / self.canvas.fftnum
 
-                    #freq_result = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
-                    #freq_result = random.uniform(1, 5)
+                    # freq_result = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
+                    # freq_result = random.uniform(1, 5)
 
                     x['datay'].append(freq_result)
 

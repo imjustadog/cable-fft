@@ -133,7 +133,9 @@ class Code_PathWindow(Ui_Dialog_Path):
         self.lineEdit_path.setText(dlgfilepath)
 
 
-class Code_MainWindow(Ui_MainWindow): 
+class Code_MainWindow(Ui_MainWindow):
+    signal_getDateparam = QtCore.pyqtSignal(QtCore.QDate)
+
     def __init__(self, parent=None):
         super(Code_MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -147,6 +149,8 @@ class Code_MainWindow(Ui_MainWindow):
         
         self.cmdlnkbtn_datarfreq.clicked.connect(self.freqordata)
         self.cmdlnkbtn_realrhis.clicked.connect(self.realtimeorhistory)
+        self.dateEdit.dateChanged[QtCore.QDate].connect(self.signal_emitter)
+        self.signal_getDateparam.connect(self.getDate)
 
         global fftnum
         global fftfreq
@@ -179,6 +183,9 @@ class Code_MainWindow(Ui_MainWindow):
         self.mplCanvas.canvas.fftrepeat = repeatrate
 
         self.mplCanvas.initDataGenerator()
+
+    def signal_emitter(self, date):
+        self.signal_getDateparam.emit(date)
         
     def freqordata(self):
         self.mplCanvas.showDataorFreq() 
@@ -254,6 +261,29 @@ class Code_MainWindow(Ui_MainWindow):
         ui_Path.show() 
         ui_Path.signal_getPathparam.connect(self.getStrPath)
  
+    @QtCore.pyqtSlot(QtCore.QDate)
+    def getDate(self, datechoosed):
+        datelist = datechoosed.toString()
+        datelist = str(datelist).split(' ')
+        monthdict = {
+            '一月': '1',
+            '二月': '2',
+            '三月': '3',
+            '四月': '4',
+            '五月': '5',
+            '六月': '6',
+            '七月': '7',
+            '八月': '8',
+            '九月': '9',
+            '十月': '10',
+            '十一月': '11',
+            '十二月': '12',
+        }
+        month = monthdict.get(datelist[1], 'nothing')
+        day = datelist[2]
+        year = datelist[3]
+        self.mplCanvas.canvas.displayhistory(year, month, day)
+
     @QtCore.pyqtSlot(list)
     def getListSerial(self, SerialParam):
         global glb_seriallist
@@ -312,6 +342,8 @@ class Code_MainWindow(Ui_MainWindow):
 
 if __name__ == "__main__":
     import sys
+    reload(sys)
+    sys.setdefaultencoding( "utf-8" )
     app = QtGui.QApplication(sys.argv)
     ui_main = Code_MainWindow()
     ui_main.show()
