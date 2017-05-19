@@ -20,7 +20,7 @@ from datasender import tcpclient
 Y_MAX = 10
 Y_MIN = 1
 INTERVAL = 1
-INTERVAL_COUNT = 3
+INTERVAL_COUNT = 1
 MAXCOUNTER = 48
 
 
@@ -60,7 +60,6 @@ class MplCanvas(FigureCanvas):
             datadict['datay'] = []
             datadict['freqcurve'] = None
             datadict['freqpoint'] = None
-
             self.datalist.append(datadict)
 
         self.datay = []
@@ -85,18 +84,28 @@ class MplCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
     
     def displayhistory(self, year, month, day):
+        datalisthistory = self.datalist
+        for x in datalisthistory:
+            x['datay'] = []
+        dataX = []
         filepathym = self.filepath + year + u'年' + \
             os.path.sep + month + u'月'
         if os.path.exists(filepathym):
             foldernamelisttemp = os.listdir(filepathym)
             for folder in foldernamelisttemp:
-                date = folder.split(' ')[0]
-                if date.split('-')[2] is day:
+                folder = str(folder)
+                dateandtime = folder.split(' ')
+                date = dateandtime[0].split('-')
+                clock = dateandtime[1].split('-')
+                if date[2] == day:
+                    dataX.append(datetime(int(date[0]), int(date[1]), int(date[2]),
+                                          int(clock[0]), int(clock[1]), int(clock[2])))
                     filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
-                    traversefolder(filepathtime, self.datalist, self.fftnum, self.fftrepeat, self.fftfreq)
+                    traversefolder(filepathtime, datalisthistory, self.fftnum, self.fftrepeat, self.fftfreq)
+            self.plot_freq(datalisthistory, dataX, 0)
 
-    def plot_freq(self, datax, counter):
-        for x in self.datalist:
+    def plot_freq(self, datalist, datax, counter):
+        for x in datalist:
             if x['enabled']:
                 if x['freqcurve'] is None:
                     # create draw object once
@@ -287,7 +296,7 @@ class MplCanvasWrapper(QtGui.QWidget):
                 if self.client.needtosend:
                     self.client.senddata(newData)
                 if self.__generating:
-                    self.canvas.plot_freq(self.dataX, self.counter)
+                    self.canvas.plot_freq(self.canvas.datalist, self.dataX, self.counter)
                     if self.counter >= MAXCOUNTER:
                         self.dataX.pop(0)
                         for x in self.canvas.datalist:
@@ -321,8 +330,6 @@ class MplCanvasWrapper(QtGui.QWidget):
 def fft(path, fftnum, fftrepeat):
     count = 0
     datay = []
-    fileinfo = os.stat(path)
-    time.localtime(fileinfo.st_ctime)
     f = open(path, "rb")
     try:
         while True:
@@ -362,10 +369,11 @@ def findfreq(mag, fftnum, fftfreq):
         if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 50:
             freq.append(i + 1)
 
+    freq_result = 0
     if len(freq) >= 2:
         freq_step2 = freq[1] * fftfreq / fftnum
         freq_result = freq_step2 / 2
-    else:
+    elif len(freq) > 0:
         freq_result = freq[0] * fftfreq / fftnum
     # freq_result = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
     # freq_result = random.uniform(1, 5)

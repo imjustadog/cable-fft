@@ -343,7 +343,7 @@ class Code_MainWindow(Ui_MainWindow):
 if __name__ == "__main__":
     import sys
     reload(sys)
-    sys.setdefaultencoding( "utf-8" )
+    sys.setdefaultencoding("utf-8")
     app = QtGui.QApplication(sys.argv)
     ui_main = Code_MainWindow()
     ui_main.show()
