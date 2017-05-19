@@ -22,10 +22,15 @@ Y_MIN = 1
 INTERVAL = 1
 INTERVAL_COUNT = 3
 MAXCOUNTER = 48
-N = 8192
 
 
 class MplCanvas(FigureCanvas):
+    fftnum = 0
+    fftfreq = 0
+    fftwindow = ''
+    fftrepeat = 0
+    filepath = ''
+
     def __init__(self):
         self.fig = Figure(facecolor='w')
         
@@ -80,7 +85,15 @@ class MplCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
     
     def displayhistory(self, year, month, day):
-        print [year, month, day]
+        filepathym = self.filepath + year + u'年' + \
+            os.path.sep + month + u'月'
+        if os.path.exists(filepathym):
+            foldernamelisttemp = os.listdir(filepathym)
+            for folder in foldernamelisttemp:
+                date = folder.split(' ')[0]
+                if date.split('-')[2] is day:
+                    filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
+                    traversefolder(filepathtime, self.datalist, self.fftnum, self.fftrepeat, self.fftfreq)
 
     def plot_freq(self, datax, counter):
         for x in self.datalist:
@@ -117,34 +130,8 @@ class MplCanvas(FigureCanvas):
         self.draw()
 
     def click_data(self, device, time):
-        self.datay = []
-        f = open(self.filepath + "1#" + device + ".tim", "rb")
-        count = 0
-        try:
-            while True:
-                a_pack = f.read(2)
-                if not a_pack:
-                    break
-                itemp, = struct.unpack('h', a_pack)
-                dtemp = itemp / 6.5536
-                self.datay.append(dtemp)
-                count += 1
-        finally:
-            f.close()
-
-        index = 0
-        magnitude = []
-        while True:
-            data = self.datay[index:index + self.fftnum]
-            data = np.abs(np.fft.fft(data, self.fftnum)) / (self.fftnum / 2)
-            magnitude.append(data)
-            index += int(self.fftnum * (1 - self.fftrepeat))
-            if index + self.fftnum > count:
-                break
-
-        self.mag = sum(np.array(magnitude)) / len(magnitude)
-        self.mag = list(self.mag)
-        self.mag = self.mag[0:int(self.fftnum / 2.56)]
+        path = self.filepath + "1#" + device + ".tim"
+        self.mag, self.datay = fft(path, self.fftnum, self.fftrepeat)
         self.plot_data()
         
     def plot_data(self):
@@ -316,71 +303,82 @@ class MplCanvasWrapper(QtGui.QWidget):
             os.path.sep + str(time.localtime().tm_mon) + u'月'
 
         if os.path.exists(filepathym):
-
             foldernamelisttemp = os.listdir(filepathym)
             for folder in foldernamelisttemp:
                 if folder not in self.foldernamelist:
                     flag = True
-                    filepathtime = filepathym + os.path.sep + folder
+                    filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
+                    break
             self.foldernamelist = foldernamelisttemp
-
             if not flag:
                 return False
-
-            for x in self.canvas.datalist:
-                if x['enabled']:
-                    count = 0
-
-                    datay = []
-                    path = filepathtime + os.path.sep + '1#' + x['device'] + '.tim'
-                    if not os.path.exists(path):
-                        continue
-                    fileinfo = os.stat(path)
-                    time.localtime(fileinfo.st_ctime)
-                    f = open(path, "rb")
-                    try:
-                        while True:
-                            a_pack = f.read(2)
-                            if not a_pack:
-                                break
-                            itemp, = struct.unpack('h', a_pack)
-                            dtemp = itemp / 6.5536
-                            datay.append(dtemp)
-                            count += 1
-                    finally:
-                        f.close()
-
-                    index = 0
-                    magnitude = []
-                    while True:
-                        data = datay[index:index + self.canvas.fftnum]
-                        data = np.abs(np.fft.fft(data, self.canvas.fftnum)) / (self.canvas.fftnum / 2)
-                        magnitude.append(data)
-                        index += int(self.canvas.fftnum * (1 - self.canvas.fftrepeat))
-                        if index + self.canvas.fftnum > count:
-                            break
-
-                    mag = sum(np.array(magnitude)) / len(magnitude)
-                    mag = list(mag)
-                    mag = mag[0: int(self.canvas.fftnum / 2.56)]
-
-                    rate = []
-                    for i in range(len(mag)-1):
-                        rate.append(mag[i+1]-mag[i])
-                    freq = []
-                    for i in range(len(rate) - 1):
-                        if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 50:
-                            freq.append(i + 1)
-
-                    if len(freq) >= 2:
-                        freq_step2 = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
-                        freq_result = freq_step2 / 2
-                    else:
-                        freq_result = freq[0] * self.canvas.fftfreq / self.canvas.fftnum
-
-                    # freq_result = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
-                    # freq_result = random.uniform(1, 5)
-
-                    x['datay'].append(freq_result)
+            traversefolder(filepathtime, self.canvas.datalist,
+                           self.canvas.fftnum, self.canvas.fftrepeat, self.canvas.fftfreq)
 
         return flag
+
+
+def fft(path, fftnum, fftrepeat):
+    count = 0
+    datay = []
+    fileinfo = os.stat(path)
+    time.localtime(fileinfo.st_ctime)
+    f = open(path, "rb")
+    try:
+        while True:
+            a_pack = f.read(2)
+            if not a_pack:
+                break
+            itemp, = struct.unpack('h', a_pack)
+            dtemp = itemp / 6.5536
+            datay.append(dtemp)
+            count += 1
+    finally:
+        f.close()
+
+    index = 0
+    magnitude = []
+    while True:
+        data = datay[index:index + fftnum]
+        data = np.abs(np.fft.fft(data, fftnum)) / (fftnum / 2)
+        magnitude.append(data)
+        index += int(fftnum * (1 - fftrepeat))
+        if index + fftnum > count:
+            break
+
+    mag = sum(np.array(magnitude)) / len(magnitude)
+    mag = list(mag)
+    mag = mag[0: int(fftnum / 2.56)]
+
+    return mag, datay
+
+
+def findfreq(mag, fftnum, fftfreq):
+    rate = []
+    for i in range(len(mag) - 1):
+        rate.append(mag[i + 1] - mag[i])
+    freq = []
+    for i in range(len(rate) - 1):
+        if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 50:
+            freq.append(i + 1)
+
+    if len(freq) >= 2:
+        freq_step2 = freq[1] * fftfreq / fftnum
+        freq_result = freq_step2 / 2
+    else:
+        freq_result = freq[0] * fftfreq / fftnum
+    # freq_result = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
+    # freq_result = random.uniform(1, 5)
+    return freq_result
+
+
+def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq):
+    for x in datalist:
+        if x['enabled']:
+            path = filepathtime + '#' + x['device'] + '.tim'
+            if not os.path.exists(path):
+                continue
+            mag, ty = fft(path, fftnum, fftrepeat)
+            freq_result = findfreq(mag, fftnum, fftfreq)
+            x['datay'].append(freq_result)
+
