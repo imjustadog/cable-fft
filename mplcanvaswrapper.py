@@ -30,6 +30,8 @@ class MplCanvas(FigureCanvas):
     fftwindow = ''
     fftrepeat = 0
     filepath = ''
+    clickdate = []
+    test = ''
 
     def __init__(self):
         self.fig = Figure(facecolor='w')
@@ -56,7 +58,7 @@ class MplCanvas(FigureCanvas):
         for i in range(8):
             datadict = {}
             datadict["enabled"] = False
-            datadict["device"] = '1-' + str(i + 1)
+            datadict["device"] = '4-' + str(i + 1)
             datadict['datay'] = []
             datadict['freqcurve'] = None
             datadict['freqpoint'] = None
@@ -83,13 +85,21 @@ class MplCanvas(FigureCanvas):
         FigureCanvas.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
     
-    def displayhistory(self, year, month, day):
+    def displayhistory(self, date):
+
         datalisthistory = self.datalist
         for x in datalisthistory:
             x['datay'] = []
         dataX = []
+
+        dates = date.split('-')
+        year = dates[0]
+        month = str(int(dates[1]))
+        day = dates[2]
         filepathym = self.filepath + year + u'年' + \
-            os.path.sep + month + u'月'
+                     os.path.sep + month + u'月'
+        self.clickdate = [filepathym, date]
+
         if os.path.exists(filepathym):
             foldernamelisttemp = os.listdir(filepathym)
             for folder in foldernamelisttemp:
@@ -101,8 +111,10 @@ class MplCanvas(FigureCanvas):
                     dataX.append(datetime(int(date[0]), int(date[1]), int(date[2]),
                                           int(clock[0]), int(clock[1]), int(clock[2])))
                     filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
+                    self.test = filepathtime
                     traversefolder(filepathtime, datalisthistory, self.fftnum, self.fftrepeat, self.fftfreq)
-            self.plot_freq(datalisthistory, dataX, 0)
+            if dataX != []:
+                self.plot_freq(datalisthistory, dataX, 0)
 
     def plot_freq(self, datalist, datax, counter):
         for x in datalist:
@@ -138,8 +150,9 @@ class MplCanvas(FigureCanvas):
             tick.set_rotation(25)
         self.draw()
 
-    def click_data(self, device, time):
-        path = self.filepath + "1#" + device + ".tim"
+    def click_data(self, device, clicktime):
+        foldername = self.clickdate[1] + ' ' + clicktime
+        path = self.clickdate[0] + os.path.sep + foldername + os.path.sep + foldername + "#" + device + ".tim"
         self.mag, self.datay = fft(path, self.fftnum, self.fftrepeat)
         self.plot_data()
         
@@ -217,9 +230,8 @@ class MplCanvas(FigureCanvas):
                 str_datay = str(round(ydata, 2))
                 self.annotate_freq = self.ax_freq.annotate(str_datay, xy=(xdata, ydata))
 
-                time_clicked = [xdata.hour, xdata.minute, xdata.second]
-                print time_clicked
-                self.click_data(x['device'],time_clicked)
+                clicktime = xdata.strftime('%H-%M-%S')
+                self.click_data(x['device'], clicktime)
                 break
         
         if event.artist == self.pointObj_data:
@@ -251,6 +263,7 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.dataX = []
         self.counter = 0
         self.foldernamelist = []
+        self.canvas.cid = self.canvas.fig.canvas.mpl_connect('pick_event', self.canvas.onclick)
     
     def showDataorFreq(self):
         if self.canvas.ax_data.get_xlabel() == "time/s":
