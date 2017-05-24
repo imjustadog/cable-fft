@@ -102,6 +102,7 @@ class MplCanvas(FigureCanvas):
 
         if os.path.exists(filepathym):
             foldernamelisttemp = os.listdir(filepathym)
+            foldernamelisttemp.sort()
             for folder in foldernamelisttemp:
                 folder = str(folder)
                 dateandtime = folder.split(' ')

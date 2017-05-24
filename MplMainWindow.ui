@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>679</width>
-    <height>675</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -96,110 +96,75 @@
       <string>选择日期</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QCheckBox" name="checkBox4">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道4</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox8">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道8</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox1">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道1</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox3">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道3</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox2">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道2</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox5">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道5</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox6">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道6</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="checkBox7">
-    <property name="geometry">
-     <rect>
-      <x>480</x>
-      <y>620</y>
-      <width>71</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>通道7</string>
-    </property>
+    <widget class="QLabel" name="lbl_choosedate_2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>580</y>
+       <width>54</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string>选择通道</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBox_chselect">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>580</y>
+       <width>69</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>通道 1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>通道 8</string>
+      </property>
+     </item>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

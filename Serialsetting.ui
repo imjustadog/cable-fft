@@ -61,6 +61,29 @@
       <string>使能通道</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno1">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -77,6 +100,29 @@
      </property>
      <property name="text">
       <string>使能通道</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
      </property>
     </widget>
    </widget>
@@ -97,6 +143,29 @@
       <string>使能通道</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno3">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
     <attribute name="title">
@@ -113,6 +182,29 @@
      </property>
      <property name="text">
       <string>使能通道</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno4">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
      </property>
     </widget>
    </widget>
@@ -133,6 +225,29 @@
       <string>使能通道</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno5">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_6">
     <attribute name="title">
@@ -149,6 +264,29 @@
      </property>
      <property name="text">
       <string>使能通道</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno6">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
      </property>
     </widget>
    </widget>
@@ -169,6 +307,29 @@
       <string>使能通道</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno7">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_8">
     <attribute name="title">
@@ -185,6 +346,29 @@
      </property>
      <property name="text">
       <string>使能通道</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>21</y>
+       <width>54</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>通道编号</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_chno8">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>71</width>
+       <height>21</height>
+      </rect>
      </property>
     </widget>
    </widget>
