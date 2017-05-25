@@ -58,11 +58,13 @@ class MplCanvas(FigureCanvas):
         for i in range(8):
             datadict = {}
             datadict["enabled"] = False
-            datadict["device"] = '4-' + str(i + 1)
+            datadict["device"] = ''
             datadict['datay'] = []
             datadict['freqcurve'] = None
             datadict['freqpoint'] = None
             self.datalist.append(datadict)
+
+        self.datalisthistory = self.datalist
 
         self.datay = []
         self.mag = []
@@ -85,12 +87,19 @@ class MplCanvas(FigureCanvas):
         FigureCanvas.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
     
-    def displayhistory(self, date):
-
-        datalisthistory = self.datalist
-        for x in datalisthistory:
-            x['datay'] = []
+    def displayhistory(self, date, channel):
         dataX = []
+
+        thechannel = int(channel.split(' ')[1])
+        i = 0
+        for x in self.datalisthistory:
+            x['datay'] = []
+            x['device'] = self.datalist[i]['device']
+            if thechannel == i + 1:
+                x['enabled'] = True
+            else:
+                x['enabled'] = False
+            i += 1
 
         dates = date.split('-')
         year = dates[0]
@@ -113,11 +122,12 @@ class MplCanvas(FigureCanvas):
                                           int(clock[0]), int(clock[1]), int(clock[2])))
                     filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
                     self.test = filepathtime
-                    traversefolder(filepathtime, datalisthistory, self.fftnum, self.fftrepeat, self.fftfreq)
+                    traversefolder(filepathtime, self.datalisthistory, self.fftnum, self.fftrepeat, self.fftfreq)
             if dataX != []:
-                self.plot_freq(datalisthistory, dataX, 0)
+                self.plot_freq(self.datalisthistory, dataX, 0)
 
     def plot_freq(self, datalist, datax, counter):
+        clear_freq_annotate(self)
         for x in datalist:
             if x['enabled']:
                 if x['freqcurve'] is None:
@@ -141,6 +151,12 @@ class MplCanvas(FigureCanvas):
                     # update data of draw object
                     x['freqcurve'].set_data(np.array(datax), np.array(x['datay']))
                     x['freqpoint'].set_data(np.array(datax), np.array(x['datay']))
+            else:
+                if x['freqcurve'] is not None:
+                    x['freqcurve'].remove()
+                    x['freqpoint'].remove()
+                    x['freqcurve'] = None
+                    x['freqpoint'] = None
         # update limit of X axis,to make sure it can move
         if counter >= MAXCOUNTER:
             self.ax_freq.set_xlim(datax[0], datax[-1])
@@ -158,12 +174,7 @@ class MplCanvas(FigureCanvas):
         self.plot_data()
         
     def plot_data(self):
-        if self.annotate_data is not None:
-            self.annotate_data.remove()
-            self.annotate_data = None
-        if self.clickObj_data is not None:
-            self.clickObj_data.remove()
-            self.clickObj_data = None
+        clear_data_annotate(self)
         datax = range(len(self.datay))
         datax = [x / self.fftfreq for x in datax]
         self.ax_data.set_xlabel("time/s")
@@ -193,12 +204,7 @@ class MplCanvas(FigureCanvas):
         self.draw()
     
     def plot_FFT(self):
-        if self.annotate_data is not None:
-            self.annotate_data.remove()
-            self.annotate_data = None
-        if self.clickObj_data is not None:
-                self.clickObj_data.remove()
-                self.clickObj_data = None
+        clear_data_annotate(self)
         if self.curveObj_data is None:
             pass
         else:
@@ -220,14 +226,9 @@ class MplCanvas(FigureCanvas):
                 else:
                     self.clickObj_freq.set_data(xdata, ydata)
 
-                if self.clickObj_data is not None:
-                    self.clickObj_data.remove()
-                    self.clickObj_data = None
-                if self.annotate_data is not None:
-                    self.annotate_data.remove()
-                    self.annotate_data = None
-                if self.annotate_freq is not None:
-                    self.annotate_freq.remove()
+                clear_data_annotate(self)
+                clear_freq_annotate(self)
+
                 str_datay = str(round(ydata, 2))
                 self.annotate_freq = self.ax_freq.annotate(str_datay, xy=(xdata, ydata))
 
@@ -404,3 +405,20 @@ def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq):
             freq_result = findfreq(mag, fftnum, fftfreq)
             x['datay'].append(freq_result)
 
+
+def clear_data_annotate(self):
+    if self.annotate_data is not None:
+        self.annotate_data.remove()
+        self.annotate_data = None
+    if self.clickObj_data is not None:
+        self.clickObj_data.remove()
+        self.clickObj_data = None
+
+
+def clear_freq_annotate(self):
+    if self.clickObj_freq is not None:
+        self.clickObj_freq.remove()
+        self.clickObj_freq = None
+    if self.annotate_freq is not None:
+        self.annotate_freq.remove()
+        self.annotate_freq = None

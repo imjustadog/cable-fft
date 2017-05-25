@@ -40,7 +40,8 @@ serverIP = '127.0.0.1'
 serverPort = 8080
 hostIP = '192.168.0.100'
 hostPort = 50000
-
+channelchoosed = '通道 1'
+datechoosed = ''
 
 class Code_NetWindow(Ui_Dialog_Net):
     signal_getNetparam = QtCore.pyqtSignal(dict)
@@ -75,6 +76,17 @@ class Code_SerialWindow(Ui_Dialog_Serial):
         self.checkBox_com4.setCheckState(glb_seriallist[0][3])
         self.checkBox_com5.setCheckState(glb_seriallist[0][4])
         self.checkBox_com6.setCheckState(glb_seriallist[0][5])
+        self.checkBox_com7.setCheckState(glb_seriallist[0][6])
+        self.checkBox_com8.setCheckState(glb_seriallist[0][7])
+
+        self.lineEdit_chno1.setText(glb_seriallist[1][0])
+        self.lineEdit_chno2.setText(glb_seriallist[1][1])
+        self.lineEdit_chno3.setText(glb_seriallist[1][2])
+        self.lineEdit_chno4.setText(glb_seriallist[1][3])
+        self.lineEdit_chno5.setText(glb_seriallist[1][4])
+        self.lineEdit_chno6.setText(glb_seriallist[1][5])
+        self.lineEdit_chno7.setText(glb_seriallist[1][6])
+        self.lineEdit_chno8.setText(glb_seriallist[1][7])
         
         self.buttonBox.accepted.connect(self.signal_emitter)
 
@@ -85,6 +97,12 @@ class Code_SerialWindow(Ui_Dialog_Serial):
                             self.checkBox_com3.checkState(), self.checkBox_com4.checkState(),
                             self.checkBox_com5.checkState(), self.checkBox_com6.checkState(),
                             self.checkBox_com7.checkState(), self.checkBox_com8.checkState(),
+                          ])
+        Seriallist.append([
+                            self.lineEdit_chno1.text(), self.lineEdit_chno2.text(),
+                            self.lineEdit_chno3.text(), self.lineEdit_chno4.text(),
+                            self.lineEdit_chno5.text(), self.lineEdit_chno6.text(),
+                            self.lineEdit_chno7.text(), self.lineEdit_chno8.text(),
                           ])
         self.signal_getSerialparam.emit(Seriallist)
 
@@ -133,7 +151,7 @@ class Code_PathWindow(Ui_Dialog_Path):
 
 
 class Code_MainWindow(Ui_MainWindow):
-    signal_getDateparam = QtCore.pyqtSignal(QtCore.QDate)
+    signal_getDateparam = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super(Code_MainWindow, self).__init__(parent)
@@ -148,7 +166,9 @@ class Code_MainWindow(Ui_MainWindow):
         
         self.cmdlnkbtn_datarfreq.clicked.connect(self.freqordata)
         self.cmdlnkbtn_realrhis.clicked.connect(self.realtimeorhistory)
-        self.dateEdit.dateChanged[QtCore.QDate].connect(self.signal_emitter)
+        self.btn_showhis.clicked.connect(self.signal_emitter)
+        self.dateEdit.setDate(QtCore.QDate.currentDate())
+
         self.signal_getDateparam.connect(self.getDate)
 
         global fftnum
@@ -169,8 +189,10 @@ class Code_MainWindow(Ui_MainWindow):
         for x in self.mplCanvas.canvas.datalist:
             if glb_seriallist[0][i] == 2:
                 x['enabled'] = True
+                x['device'] = glb_seriallist[1][i]
             else:
                 x['enabled'] = False
+                x['device'] = glb_seriallist[1][i]
             i = i + 1
 
         global fftrepeat
@@ -181,10 +203,13 @@ class Code_MainWindow(Ui_MainWindow):
             repeatrate = float(listrepeatrate[0]) / float(listrepeatrate[1])
         self.mplCanvas.canvas.fftrepeat = repeatrate
 
+        global datechoosed
+        datechoosed = QtCore.QDate.currentDate()
+
         self.mplCanvas.initDataGenerator()
 
-    def signal_emitter(self, date):
-        self.signal_getDateparam.emit(date)
+    def signal_emitter(self):
+        self.signal_getDateparam.emit()
         
     def freqordata(self):
         self.mplCanvas.showDataorFreq() 
@@ -194,12 +219,19 @@ class Code_MainWindow(Ui_MainWindow):
             self.cmdlnkbtn_realrhis.setText(_translate("MainWindow", "查看历史", None))
             self.dateEdit.hide()
             self.lbl_choosedate.hide()
+            self.lbl_choosedate_2.hide()
+            self.comboBox_chselect.hide()
             self.mplCanvas.startPlot()  
         else:
+            global datechoosed
+            datechoosed = QtCore.QDate.currentDate()
+            self.dateEdit.setDate(QtCore.QDate.currentDate())
             self.cmdlnkbtn_realrhis.setText(_translate("MainWindow", "实时显示", None))
             self.dateEdit.show()
             self.lbl_choosedate.show()
-            self.mplCanvas.pausePlot()  
+            self.lbl_choosedate_2.show()
+            self.comboBox_chselect.show()
+            self.mplCanvas.pausePlot()
        
     def releasePlot(self):
         '''stop and release thread'''
@@ -259,11 +291,14 @@ class Code_MainWindow(Ui_MainWindow):
         ui_Path = Code_PathWindow(self)  
         ui_Path.show() 
         ui_Path.signal_getPathparam.connect(self.getStrPath)
- 
-    @QtCore.pyqtSlot(QtCore.QDate)
-    def getDate(self, datechoosed):
-        datelist = datechoosed.toString('yyyy-MM-dd')
-        self.mplCanvas.canvas.displayhistory(datelist)
+
+    @QtCore.pyqtSlot()
+    def getDate(self):
+        global datechoosed
+        global channelchoosed
+        channelchoosed = self.comboBox_chselect.currentText()
+        datechoosed = self.dateEdit.date().toString('yyyy-MM-dd')
+        self.mplCanvas.canvas.displayhistory(datechoosed, channelchoosed)
 
     @QtCore.pyqtSlot(list)
     def getListSerial(self, SerialParam):
@@ -273,8 +308,10 @@ class Code_MainWindow(Ui_MainWindow):
         for x in self.mplCanvas.canvas.datalist:
             if glb_seriallist[0][i] == 2:
                 x['enabled'] = True
+                x['device'] = glb_seriallist[1][i]
             else:
                 x['enabled'] = False
+                x['device'] = glb_seriallist[1][i]
             i = i + 1
 
     

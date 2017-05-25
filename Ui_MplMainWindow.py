@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\GitHub\pycharm\MplMainWindow.ui'
 #
-# Created: Wed May 24 16:36:16 2017
+# Created: Thu May 25 21:06:21 2017
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,7 +33,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
         self.mplCanvas = MplCanvasWrapper(self.centralWidget)
-        self.mplCanvas.setGeometry(QtCore.QRect(0, 0, 661, 611))
+        self.mplCanvas.setGeometry(QtCore.QRect(10, 0, 661, 611))
         self.mplCanvas.setObjectName(_fromUtf8("mplCanvas"))
         self.cmdlnkbtn_datarfreq = QtGui.QCommandLinkButton(self.mplCanvas)
         self.cmdlnkbtn_datarfreq.setGeometry(QtCore.QRect(540, 50, 111, 41))
@@ -68,6 +68,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.comboBox_chselect.addItem(_fromUtf8(""))
         self.comboBox_chselect.addItem(_fromUtf8(""))
         self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.btn_showhis = QtGui.QPushButton(self.mplCanvas)
+        self.btn_showhis.setGeometry(QtCore.QRect(380, 580, 75, 23))
+        self.btn_showhis.setObjectName(_fromUtf8("btn_showhis"))
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0, 0, 679, 23))
@@ -121,6 +124,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.comboBox_chselect.setItemText(5, _translate("MainWindow", "通道 6", None))
         self.comboBox_chselect.setItemText(6, _translate("MainWindow", "通道 7", None))
         self.comboBox_chselect.setItemText(7, _translate("MainWindow", "通道 8", None))
+        self.btn_showhis.setText(_translate("MainWindow", "OK", None))
         self.menu.setTitle(_translate("MainWindow", "设置", None))
         self.menu_2.setTitle(_translate("MainWindow", "控制", None))
         self.actionFFT.setText(_translate("MainWindow", "FFT设置", None))
