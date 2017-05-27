@@ -221,6 +221,7 @@ class Code_MainWindow(Ui_MainWindow):
             self.lbl_choosedate.hide()
             self.lbl_choosedate_2.hide()
             self.comboBox_chselect.hide()
+            self.btn_showhis.hide()
             self.mplCanvas.startPlot()  
         else:
             global datechoosed
@@ -231,6 +232,7 @@ class Code_MainWindow(Ui_MainWindow):
             self.lbl_choosedate.show()
             self.lbl_choosedate_2.show()
             self.comboBox_chselect.show()
+            self.btn_showhis.show()
             self.mplCanvas.pausePlot()
        
     def releasePlot(self):
