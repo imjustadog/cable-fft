@@ -122,7 +122,7 @@ class MplCanvas(FigureCanvas):
                                           int(clock[0]), int(clock[1]), int(clock[2])))
                     filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
                     self.test = filepathtime
-                    traversefolder(filepathtime, self.datalisthistory, self.fftnum, self.fftrepeat, self.fftfreq)
+                    traversefolder(filepathtime, self.datalisthistory, self.fftnum, self.fftrepeat, self.fftfreq, self.fftwindow)
             if dataX != []:
                 self.plot_freq(self.datalisthistory, dataX, 0)
 
@@ -170,7 +170,7 @@ class MplCanvas(FigureCanvas):
     def click_data(self, device, clicktime):
         foldername = self.clickdate[1] + ' ' + clicktime
         path = self.clickdate[0] + os.path.sep + foldername + os.path.sep + foldername + "#" + device + ".tim"
-        self.mag, self.datay = fft(path, self.fftnum, self.fftrepeat)
+        self.mag, self.datay = fft(path, self.fftnum, self.fftrepeat, self.fftwindow)
         self.plot_data()
         
     def plot_data(self):
@@ -337,12 +337,12 @@ class MplCanvasWrapper(QtGui.QWidget):
             if not flag:
                 return False
             traversefolder(filepathtime, self.canvas.datalist,
-                           self.canvas.fftnum, self.canvas.fftrepeat, self.canvas.fftfreq)
+                           self.canvas.fftnum, self.canvas.fftrepeat, self.canvas.fftfreq, self.canvas.fftwindow)
 
         return flag
 
 
-def fft(path, fftnum, fftrepeat):
+def fft(path, fftnum, fftrepeat,fftwindow):
     count = 0
     datay = []
     f = open(path, "rb")
@@ -362,6 +362,10 @@ def fft(path, fftnum, fftrepeat):
     magnitude = []
     while True:
         data = datay[index:index + fftnum]
+        if fftwindow == u"汉宁窗":
+            win = np.hanning(fftnum)
+            data = np.array(data)
+            data = np.multiply(data,win)
         data = np.abs(np.fft.fft(data, fftnum)) / (fftnum / 2)
         magnitude.append(data)
         index += int(fftnum * (1 - fftrepeat))
@@ -402,13 +406,13 @@ def findfreq(mag, fftnum, fftfreq):
     return freq[0] * fftfreq / fftnum
 
 
-def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq):
+def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq, fftwindow):
     for x in datalist:
         if x['enabled']:
             path = filepathtime + '#' + x['device'] + '.tim'
             if not os.path.exists(path):
                 continue
-            mag, ty = fft(path, fftnum, fftrepeat)
+            mag, ty = fft(path, fftnum, fftrepeat, fftwindow)
             freq_result = findfreq(mag, fftnum, fftfreq)
             x['datay'].append(freq_result)
 
