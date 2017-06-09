@@ -384,15 +384,22 @@ def findfreq(mag, fftnum, fftfreq):
         if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 50:
             freq.append(i + 1)
 
-    freq_result = 0
-    if len(freq) >= 2:
-        freq_step2 = freq[1] * fftfreq / fftnum
-        freq_result = freq_step2 / 2
-    elif len(freq) > 0:
-        freq_result = freq[0] * fftfreq / fftnum
-    # freq_result = freq[1] * self.canvas.fftfreq / self.canvas.fftnum
-    # freq_result = random.uniform(1, 5)
-    return freq_result
+    if len(freq) > 5:
+        choose_end = 5
+    else:
+        choose_end = len(freq)
+
+    if choose_end == 0:
+        return 0
+
+    elif choose_end == 1:
+        return freq[0] * fftfreq / fftnum
+
+    for i in range(choose_end - 1):
+        for j in range(i + 1, choose_end):
+            if abs(2 * freq[i] - freq[j]) <= 1:
+                return freq[i] * fftfreq / fftnum
+    return freq[0] * fftfreq / fftnum
 
 
 def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq):
