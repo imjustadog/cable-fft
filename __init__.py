@@ -38,7 +38,7 @@ glb_seriallist =\
 
 serverIP = '127.0.0.1'
 serverPort = 8080
-hostIP = '192.168.0.100'
+hostIP = '127.0.0.1'
 hostPort = 50000
 channelchoosed = '通道 1'
 datechoosed = ''

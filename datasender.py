@@ -1,4 +1,5 @@
 import socket
+import struct
 
 class tcpclient():
     def __init__(self):
@@ -40,7 +41,17 @@ class tcpclient():
             self.clientsocket = None
 
     def senddata(self, data):
-        buf = str(data)
+        #buf = ['S', 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x40, 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 'E']
+        buf = '\x53\x01\x02\x03\x04\x05\x06\x40'
+        for xindex, x in enumerate(data):
+            if x['enabled']:
+                databuf = struct.pack('>h', int(x['datay'][-1]))
+                buf += '\x01'
+                buf += databuf
+            else:
+                buf += '\x00'
+                buf += '\x00\x00'
+        buf += '\x45'
         if not self.__connected:
             if self.connect(self.HOST, self.PORT):
                 try:

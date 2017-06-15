@@ -309,7 +309,7 @@ class MplCanvasWrapper(QtGui.QWidget):
                 newTime = datetime.now()
                 self.dataX.append(newTime)
                 if self.client.needtosend:
-                    self.client.senddata(newData)
+                    self.client.senddata(self.canvas.datalist)
                 if self.__generating:
                     self.canvas.plot_freq(self.canvas.datalist, self.dataX, self.counter)
                     if self.counter >= MAXCOUNTER:
