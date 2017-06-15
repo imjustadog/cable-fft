@@ -295,13 +295,9 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.__exit  = True
 
     def generateData(self):
-
-        filepathym = self.canvas.filepath + str(time.localtime().tm_year) + u'年' + \
-                     os.path.sep + str(time.localtime().tm_mon) + u'月'
-        if os.path.exists(filepathym):
-            self.foldernamelist = os.listdir(filepathym)
-
         while True:
+            self.filepathym = self.canvas.filepath + str(time.localtime().tm_year) + u'年' + \
+                os.path.sep + str(time.localtime().tm_mon) + u'月'
             if self.__exit:
                 break
             newData = self.readfilename()
@@ -323,15 +319,12 @@ class MplCanvasWrapper(QtGui.QWidget):
 
     def readfilename(self):
         flag = False
-        filepathym = self.canvas.filepath + str(time.localtime().tm_year) + u'年' + \
-            os.path.sep + str(time.localtime().tm_mon) + u'月'
-
-        if os.path.exists(filepathym):
-            foldernamelisttemp = os.listdir(filepathym)
+        if os.path.exists(self.filepathym):
+            foldernamelisttemp = os.listdir(self.filepathym)
             for folder in foldernamelisttemp:
                 if folder not in self.foldernamelist:
                     flag = True
-                    filepathtime = filepathym + os.path.sep + folder + os.path.sep + folder
+                    filepathtime = self.filepathym + os.path.sep + folder + os.path.sep + folder
                     break
             self.foldernamelist = foldernamelisttemp
             if not flag:
