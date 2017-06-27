@@ -329,8 +329,9 @@ class Code_MainWindow(Ui_MainWindow):
         hostPort = NetParam['hostPort']
  
     @QtCore.pyqtSlot(str)
-    def getStrPath(self,PathStr):
+    def getStrPath(self, PathStr):
         global filepath
+        PathStr = unicode(PathStr.toUtf8(), 'utf-8', 'ignore')
         filepath = PathStr
         path = filepath.split("\\")
         path = [x + os.path.sep for x in path]
