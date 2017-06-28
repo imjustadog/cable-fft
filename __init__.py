@@ -207,6 +207,7 @@ class Code_MainWindow(Ui_MainWindow):
         datechoosed = QtCore.QDate.currentDate()
 
         self.mplCanvas.initDataGenerator()
+        self.Connect()
 
     def signal_emitter(self):
         self.signal_getDateparam.emit()
@@ -249,7 +250,7 @@ class Code_MainWindow(Ui_MainWindow):
         if result == QtGui.QMessageBox.Yes:
             self.releasePlot()  # release thread's resouce
             event.accept()
- 
+
     def Cut(self):
         self.mplCanvas.client.needtosend = False
         self.actionConnect.setEnabled(True)
@@ -259,20 +260,10 @@ class Code_MainWindow(Ui_MainWindow):
     def Connect(self):
         global serverIP
         global serverPort
-        if self.mplCanvas.client.connect(serverIP, serverPort) is True:
-            self.mplCanvas.client.needtosend = True
-            QtGui.QMessageBox.question(self,
-                      "message",
-                      "Connect success",
-                      QtGui.QMessageBox.Yes)
-            self.actionConnect.setEnabled(False)
-            self.actionCut.setEnabled(True)
-        else:
-            self.mplCanvas.client.needtosend = False
-            QtGui.QMessageBox.question(self,
-                      "message",
-                      "Connect failed",
-                      QtGui.QMessageBox.Yes)
+        self.mplCanvas.client.connect(serverIP, serverPort)
+        self.mplCanvas.client.needtosend = True
+        self.actionConnect.setEnabled(False)
+        self.actionCut.setEnabled(True)
         
     def openNetDlg(self):
         ui_Net= Code_NetWindow(self)

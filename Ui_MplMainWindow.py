@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\GitHub\pycharm\MplMainWindow.ui'
 #
-# Created: Thu May 25 21:06:21 2017
+# Created: Wed Jun 28 15:21:51 2017
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -92,9 +92,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.actionCloseSerial.setEnabled(False)
         self.actionCloseSerial.setObjectName(_fromUtf8("actionCloseSerial"))
         self.actionConnect = QtGui.QAction(MainWindow)
+        self.actionConnect.setEnabled(False)
         self.actionConnect.setObjectName(_fromUtf8("actionConnect"))
         self.actionCut = QtGui.QAction(MainWindow)
-        self.actionCut.setEnabled(False)
+        self.actionCut.setEnabled(True)
         self.actionCut.setObjectName(_fromUtf8("actionCut"))
         self.actionNet = QtGui.QAction(MainWindow)
         self.actionNet.setObjectName(_fromUtf8("actionNet"))
