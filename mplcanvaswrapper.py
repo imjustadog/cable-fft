@@ -55,7 +55,7 @@ class MplCanvas(FigureCanvas):
         self.fig.subplots_adjust(top=0.92, bottom=0.13, left=0.10, right=0.95)
 
         self.datalist = []
-        for i in range(8):
+        for i in range(16):
             datadict = {}
             datadict["enabled"] = False
             datadict["device"] = ''

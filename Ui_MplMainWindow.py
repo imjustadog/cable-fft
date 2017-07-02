@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\GitHub\pycharm\MplMainWindow.ui'
 #
-# Created: Wed Jun 28 15:21:51 2017
+# Created: Sun Jul 02 14:07:39 2017
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -68,18 +68,18 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.comboBox_chselect.addItem(_fromUtf8(""))
         self.comboBox_chselect.addItem(_fromUtf8(""))
         self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
+        self.comboBox_chselect.addItem(_fromUtf8(""))
         self.btn_showhis = QtGui.QPushButton(self.mplCanvas)
         self.btn_showhis.setGeometry(QtCore.QRect(380, 580, 75, 23))
         self.btn_showhis.setObjectName(_fromUtf8("btn_showhis"))
         MainWindow.setCentralWidget(self.centralWidget)
-        self.menuBar = QtGui.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 679, 23))
-        self.menuBar.setObjectName(_fromUtf8("menuBar"))
-        self.menu = QtGui.QMenu(self.menuBar)
-        self.menu.setObjectName(_fromUtf8("menu"))
-        self.menu_2 = QtGui.QMenu(self.menuBar)
-        self.menu_2.setObjectName(_fromUtf8("menu_2"))
-        MainWindow.setMenuBar(self.menuBar)
         self.actionFFT = QtGui.QAction(MainWindow)
         self.actionFFT.setObjectName(_fromUtf8("actionFFT"))
         self.actionPath = QtGui.QAction(MainWindow)
@@ -99,14 +99,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.actionCut.setObjectName(_fromUtf8("actionCut"))
         self.actionNet = QtGui.QAction(MainWindow)
         self.actionNet.setObjectName(_fromUtf8("actionNet"))
-        self.menu.addAction(self.actionFFT)
-        self.menu.addAction(self.actionPath)
-        self.menu.addAction(self.actionSerial)
-        self.menu.addAction(self.actionNet)
-        self.menu_2.addAction(self.actionConnect)
-        self.menu_2.addAction(self.actionCut)
-        self.menuBar.addAction(self.menu.menuAction())
-        self.menuBar.addAction(self.menu_2.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -125,9 +117,15 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.comboBox_chselect.setItemText(5, _translate("MainWindow", "通道 6", None))
         self.comboBox_chselect.setItemText(6, _translate("MainWindow", "通道 7", None))
         self.comboBox_chselect.setItemText(7, _translate("MainWindow", "通道 8", None))
+        self.comboBox_chselect.setItemText(8, _translate("MainWindow", "通道 9", None))
+        self.comboBox_chselect.setItemText(9, _translate("MainWindow", "通道 10", None))
+        self.comboBox_chselect.setItemText(10, _translate("MainWindow", "通道 11", None))
+        self.comboBox_chselect.setItemText(11, _translate("MainWindow", "通道 12", None))
+        self.comboBox_chselect.setItemText(12, _translate("MainWindow", "通道 13", None))
+        self.comboBox_chselect.setItemText(13, _translate("MainWindow", "通道 14", None))
+        self.comboBox_chselect.setItemText(14, _translate("MainWindow", "通道 15", None))
+        self.comboBox_chselect.setItemText(15, _translate("MainWindow", "通道 16", None))
         self.btn_showhis.setText(_translate("MainWindow", "OK", None))
-        self.menu.setTitle(_translate("MainWindow", "设置", None))
-        self.menu_2.setTitle(_translate("MainWindow", "控制", None))
         self.actionFFT.setText(_translate("MainWindow", "FFT设置", None))
         self.actionPath.setText(_translate("MainWindow", "路径设置", None))
         self.actionSerial.setText(_translate("MainWindow", "通道设置", None))
