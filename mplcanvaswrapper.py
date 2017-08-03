@@ -325,6 +325,8 @@ class MplCanvasWrapper(QtGui.QWidget):
         if os.path.exists(self.filepathym):
             foldernamelisttemp = os.listdir(self.filepathym)
             for folder in foldernamelisttemp:
+                if folder.find('.') > 0:
+                    continue
                 if folder not in self.foldernamelist:
                     flag = True
                     filepathtime = self.filepathym + os.path.sep + folder + os.path.sep + folder
@@ -332,6 +334,7 @@ class MplCanvasWrapper(QtGui.QWidget):
             self.foldernamelist = foldernamelisttemp
             if not flag:
                 return False
+            time.sleep(900)
             traversefolder(filepathtime, self.canvas.datalist,
                            self.canvas.fftnum, self.canvas.fftrepeat, self.canvas.fftfreq, self.canvas.fftwindow)
 
