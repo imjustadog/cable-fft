@@ -114,6 +114,8 @@ class MplCanvas(FigureCanvas):
             foldernamelisttemp.sort()
             for folder in foldernamelisttemp:
                 folder = str(folder)
+                if folder.find('.') > 0:
+                    continue
                 dateandtime = folder.split(' ')
                 date = dateandtime[0].split('-')
                 clock = dateandtime[1].split('-')
@@ -211,6 +213,7 @@ class MplCanvas(FigureCanvas):
             datax = range(int(self.fftnum / 2.56))
             datax = [x * self.fftfreq / self.fftnum for x in datax]
             self.ax_data.set_xlim(datax[0], datax[-1])
+            self.ax_data.set_ylim(0, max(self.mag))
             self.ax_data.set_xlabel("frequent/Hz")
             self.curveObj_data.set_data(np.array(datax), np.array(self.mag))
             self.pointObj_data.set_data(np.array(datax), np.array(self.mag))
@@ -345,7 +348,7 @@ def fft(path, fftnum, fftrepeat,fftwindow):
             if not a_pack:
                 break
             itemp, = struct.unpack('h', a_pack)
-            dtemp = itemp / 6.5536
+            dtemp = itemp / (-4.8)
             datay.append(dtemp)
             count += 1
     finally:
@@ -368,6 +371,7 @@ def fft(path, fftnum, fftrepeat,fftwindow):
     mag = sum(np.array(magnitude)) / len(magnitude)
     mag = list(mag)
     mag = mag[0: int(fftnum / 2.56)]
+    mag[0] = 0
 
     return mag, datay
 
@@ -378,7 +382,7 @@ def findfreq(mag, fftnum, fftfreq):
         rate.append(mag[i + 1] - mag[i])
     freq = []
     for i in range(len(rate) - 1):
-        if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 50:
+        if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 0.1:
             freq.append(i + 1)
 
     if len(freq) > 5:
@@ -394,7 +398,7 @@ def findfreq(mag, fftnum, fftfreq):
 
     for i in range(choose_end - 1):
         for j in range(i + 1, choose_end):
-            if abs(2 * freq[i] - freq[j]) <= 1:
+            if abs(2 * freq[i] - freq[j]) <= 0.5:
                 return freq[i] * fftfreq / fftnum
     return freq[0] * fftfreq / fftnum
 

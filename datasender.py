@@ -45,7 +45,7 @@ class tcpclient():
         buf = '\x53\x01\x02\x03\x04\x05\x06\x40'
         for xindex, x in enumerate(data):
             if x['enabled']:
-                databuf = struct.pack('>h', int(x['datay'][-1]))
+                databuf = struct.pack('>h', int(x['datay'][-1] * 100))
                 buf += '\x01'
                 buf += databuf
             else:

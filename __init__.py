@@ -19,21 +19,21 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-filepath = "C:\Users\zwq\Desktop\pydat"
+filepath = "D:\data"
 fftnum = 8192
-fftfreq = 200
+fftfreq = 75.36
 fftrepeat = '0'
 fftwindow = u"矩形窗"
 
 # 0:none_checked 1:half_checked 2:checked
 glb_seriallist =\
 [
-    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ['1-1', '1-2', '1-3', '1-4', '2-1', '2-2', '2-3', '2-4', '3-1', '3-2', '3-3', '3-4', '4-1', '4-2', '4-3', '4-4'],
+    [0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0],
+    ['1-1', '1-2', '1-3', '1-4', '1-5', '2-1', '2-2', '2-3', '2-4', '2-5', '3-1', '3-2', '3-3', '4-1', '4-2', '4-3'],
 ]
 
 serverIP = '127.0.0.1'
-serverPort = 8080
+serverPort = 50040
 hostIP = '127.0.0.1'
 hostPort = 50000
 channelchoosed = '通道 1'
