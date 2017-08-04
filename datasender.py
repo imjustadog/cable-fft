@@ -58,9 +58,20 @@ class tcpclient():
                     self.clientsocket.send(buf)
                 except socket.error, msg:
                     self.clientsocket.close()
+                    self.clientsocket = None
+                    self.__connected = False
         else:
             try:
                 self.clientsocket.send(buf)
             except socket.error, msg:
-                self.__connected = False
                 self.clientsocket.close()
+                self.clientsocket = None
+                self.__connected = False
+                if self.connect(self.HOST, self.PORT):
+                    try:
+                        self.clientsocket.send(buf)
+                    except socket.error, msg:
+                        self.clientsocket.close()
+                        self.clientsocket = None
+                        self.__connected = False
+
