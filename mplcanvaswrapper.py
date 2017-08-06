@@ -181,6 +181,7 @@ class MplCanvas(FigureCanvas):
         datax = [x / self.fftfreq for x in datax]
         self.ax_data.set_xlabel("time/s")
         self.ax_data.set_xlim(datax[0], datax[-1])
+        self.ax_data.set_ylim(min(self.datay), max(self.datay))
         if self.curveObj_data is None:
             self.curveObj_data,  = self.ax_data.plot(
                                                      np.array(datax),
@@ -380,13 +381,44 @@ def fft(path, fftnum, fftrepeat,fftwindow):
 
 
 def findfreq(mag, fftnum, fftfreq):
-    rate = []
-    for i in range(len(mag) - 1):
-        rate.append(mag[i + 1] - mag[i])
     freq = []
-    for i in range(len(rate) - 1):
-        if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 0.1:
-            freq.append(i + 1)
+    glo_max_amp = max(mag)
+    margin_freq = 1
+    margin_count = int(margin_freq * fftnum / fftfreq)
+    max_amp = 0
+    index_max_amp = 0
+    min_amp = glo_max_amp
+    find_start = 0
+    state = 'findmax'
+    for i in range(len(mag)):
+        if state == 'findmax':
+            if i - find_start > margin_count:
+                state = 'findmin'
+                freq.append(find_start)
+                find_start = i
+                max_amp = 0
+            elif mag[i] > max_amp:
+                max_amp = mag[i]
+                find_start = i
+            else:
+                pass
+        
+        elif state == 'findmin':
+            if i - find_start > margin_count:
+                state = 'findmax'
+                find_start = i
+                min_amp = glo_max_amp
+            elif mag[i] < min_amp:
+                min_amp = mag[i]
+                find_start = i
+            else:
+                pass
+
+        else:
+            pass
+                
+    margin_freq = 0.5
+    margin_count = int(margin_freq * fftnum / fftfreq)
 
     if len(freq) > 5:
         choose_end = 5
@@ -401,7 +433,7 @@ def findfreq(mag, fftnum, fftfreq):
 
     for i in range(choose_end - 1):
         for j in range(i + 1, choose_end):
-            if abs(2 * freq[i] - freq[j]) <= 0.5:
+            if abs(2 * freq[i] - freq[j]) <= margin_count:
                 return freq[i] * fftfreq / fftnum
     return freq[0] * fftfreq / fftnum
 
