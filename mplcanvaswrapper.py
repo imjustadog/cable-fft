@@ -9,7 +9,7 @@ from matplotlib import pyplot
 import numpy as np
 import struct
 import time
-import random
+import operator
 import os
 import threading
 from datetime import datetime
@@ -389,10 +389,10 @@ def findfreq(mag, fftnum, fftfreq):
     index_max_amp = 0
     min_amp = glo_max_amp
     find_start = 0
-    state = 'findmax'
+    state = 'findmin'
     for i in range(len(mag)):
         if state == 'findmax':
-            if i - find_start > margin_count:
+            if i - find_start > margin_count and mag[find_start] > 3 * sum(mag[find_start:i]) / (i - find_start):
                 state = 'findmin'
                 freq.append(find_start)
                 find_start = i
@@ -416,14 +416,8 @@ def findfreq(mag, fftnum, fftfreq):
 
         else:
             pass
-                
-    margin_freq = 0.5
-    margin_count = int(margin_freq * fftnum / fftfreq)
 
-    if len(freq) > 5:
-        choose_end = 5
-    else:
-        choose_end = len(freq)
+    choose_end = len(freq)
 
     if choose_end == 0:
         return 0
@@ -431,11 +425,30 @@ def findfreq(mag, fftnum, fftfreq):
     elif choose_end == 1:
         return freq[0] * fftfreq / fftnum
 
+    # margin_min = fftnum
+    # freq_main = freq[0] * fftfreq / fftnum
+    # for i in range(choose_end - 1):
+    #     for j in range(i + 1, choose_end):
+    #         margin_current = abs(2 * freq[i] - freq[j])
+    #         if margin_current < margin_min:
+    #             margin_min = margin_current
+    #             freq_main = freq[i] * fftfreq / fftnum
+
+    freq_main = []
     for i in range(choose_end - 1):
         for j in range(i + 1, choose_end):
-            if abs(2 * freq[i] - freq[j]) <= margin_count:
-                return freq[i] * fftfreq / fftnum
-    return freq[0] * fftfreq / fftnum
+            freq_dict = {}
+            freq_dict['margin'] = abs(2 * freq[i] - freq[j])
+            freq_dict['i'] = i
+            freq_dict['mag'] = mag[freq[i]]
+            freq_main.append(freq_dict)
+
+    freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
+    freq_sort_margin = sorted(freq_main, key=operator.itemgetter('i'))
+    if freq_sort_i[0]['margin'] > 2 * freq_sort_margin[0]['margin']:
+        return freq[freq_sort_margin[0]['i']] * fftfreq / fftnum
+    else:
+        return freq[freq_sort_i[0]['i']] * fftfreq / fftnum
 
 
 def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq, fftwindow):
