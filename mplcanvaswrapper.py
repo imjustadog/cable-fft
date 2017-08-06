@@ -9,7 +9,7 @@ from matplotlib import pyplot
 import numpy as np
 import struct
 import time
-import random
+import operator
 import os
 import threading
 from datetime import datetime
@@ -181,6 +181,7 @@ class MplCanvas(FigureCanvas):
         datax = [x / self.fftfreq for x in datax]
         self.ax_data.set_xlabel("time/s")
         self.ax_data.set_xlim(datax[0], datax[-1])
+        self.ax_data.set_ylim(min(self.datay), max(self.datay))
         if self.curveObj_data is None:
             self.curveObj_data,  = self.ax_data.plot(
                                                      np.array(datax),
@@ -380,18 +381,43 @@ def fft(path, fftnum, fftrepeat,fftwindow):
 
 
 def findfreq(mag, fftnum, fftfreq):
-    rate = []
-    for i in range(len(mag) - 1):
-        rate.append(mag[i + 1] - mag[i])
     freq = []
-    for i in range(len(rate) - 1):
-        if rate[i] > 0 and rate[i + 1] < 0 and mag[i + 1] > 0.1:
-            freq.append(i + 1)
+    glo_max_amp = max(mag)
+    margin_freq = 0.5
+    margin_count = int(margin_freq * fftnum / fftfreq)
+    max_amp = 0
+    index_max_amp = 0
+    min_amp = glo_max_amp
+    find_start = 0
+    state = 'findmin'
+    for i in range(len(mag)):
+        if state == 'findmax':
+            if i - find_start > margin_count and mag[find_start] > 2 * sum(mag[find_start:i]) / (i - find_start):
+                state = 'findmin'
+                freq.append(find_start)
+                find_start = i
+                max_amp = 0
+            elif mag[i] > max_amp:
+                max_amp = mag[i]
+                find_start = i
+            else:
+                pass
+        
+        elif state == 'findmin':
+            if i - find_start > margin_count:
+                state = 'findmax'
+                find_start = i
+                min_amp = glo_max_amp
+            elif mag[i] < min_amp:
+                min_amp = mag[i]
+                find_start = i
+            else:
+                pass
 
-    if len(freq) > 5:
-        choose_end = 5
-    else:
-        choose_end = len(freq)
+        else:
+            pass
+
+    choose_end = len(freq)
 
     if choose_end == 0:
         return 0
@@ -399,10 +425,28 @@ def findfreq(mag, fftnum, fftfreq):
     elif choose_end == 1:
         return freq[0] * fftfreq / fftnum
 
+    # margin_min = fftnum
+    # freq_main = freq[0] * fftfreq / fftnum
+    # for i in range(choose_end - 1):
+    #     for j in range(i + 1, choose_end):
+    #         margin_current = abs(2 * freq[i] - freq[j])
+    #         if margin_current < margin_min:
+    #             margin_min = margin_current
+    #             freq_main = freq[i] * fftfreq / fftnum
+
+    freq_main = []
     for i in range(choose_end - 1):
         for j in range(i + 1, choose_end):
-            if abs(2 * freq[i] - freq[j]) <= 0.5:
-                return freq[i] * fftfreq / fftnum
+            freq_dict = {}
+            freq_dict['margin'] = abs(2 * freq[i] - freq[j])
+            freq_dict['i'] = i
+            freq_main.append(freq_dict)
+
+    freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
+    for item in freq_sort_i:
+        if item['margin'] * fftfreq / fftnum < 1:
+            return freq[item['i']] * fftfreq / fftnum
+
     return freq[0] * fftfreq / fftnum
 
 
