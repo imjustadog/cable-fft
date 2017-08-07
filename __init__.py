@@ -137,7 +137,7 @@ class Code_MainWindow(Ui_MainWindow):
     def Connect(self):
         global serverIP
         global serverPort
-        self.mplCanvas.client.connect(serverIP, serverPort)
+        self.mplCanvas.client.setremote(serverIP, serverPort)
         self.mplCanvas.client.needtosend = True
         self.actionConnect.setEnabled(False)
         self.actionCut.setEnabled(True)

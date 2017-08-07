@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtGui
+from PyQt4 import QtCore
 from matplotlib.ticker import MultipleLocator
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
@@ -20,8 +21,10 @@ from datasender import tcpclient
 Y_MAX = 10
 Y_MIN = 1
 INTERVAL = 1
-INTERVAL_COUNT = 1
+INTERVAL_COUNT = 60
 MAXCOUNTER = 48
+
+send_lock = threading.Lock()
 
 
 class MplCanvas(FigureCanvas):
@@ -254,6 +257,8 @@ class MplCanvas(FigureCanvas):
 
 
 class MplCanvasWrapper(QtGui.QWidget):
+    signal_tcpsend = QtCore.pyqtSignal(bool)
+
     def __init__(self, parent=None):
         pyplot.style.use('bmh')
         QtGui.QWidget.__init__(self, parent)
@@ -264,13 +269,15 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.vbl.addWidget(self.ntb)
         self.vbl.addWidget(self.canvas)
         self.setLayout(self.vbl)
+
+        self.signal_tcpsend.connect(self.sendtoremote)
         self.__generating = False
         self.__exit = False
         self.dataX = []
         self.counter = 0
         self.foldernamelist = []
         self.canvas.cid = self.canvas.fig.canvas.mpl_connect('pick_event', self.canvas.onclick)
-    
+
     def showDataorFreq(self):
         if self.canvas.ax_data.get_xlabel() == "time/s":
             self.canvas.plot_FFT()
@@ -294,9 +301,19 @@ class MplCanvasWrapper(QtGui.QWidget):
     def initDataGenerator(self):
         self.tData = threading.Thread(name="dataGenerator", target=self.generateData)
         self.tData.start()
+        self.tHeartBeat = threading.Thread(name="heartbeatGenerator", target=self.generateHeartBeat)
+        self.tHeartBeat.start()
 
     def releasePlot(self):
         self.__exit  = True
+
+    def generateHeartBeat(self):
+        while True:
+            if self.__exit:
+                break
+            self.signal_tcpsend.emit(False)
+            time.sleep(30)
+
 
     def generateData(self):
         while True:
@@ -304,12 +321,11 @@ class MplCanvasWrapper(QtGui.QWidget):
                 os.path.sep + str(time.localtime().tm_mon) + u'月'
             if self.__exit:
                 break
-            newData = self.readfilename()
-            if newData:
+            isnewData = self.readfilename()
+            if isnewData:
                 newTime = datetime.now()
                 self.dataX.append(newTime)
-                if self.client.needtosend:
-                    self.client.senddata(self.canvas.datalist)
+                self.signal_tcpsend.emit(True)
                 if self.__generating:
                     self.canvas.plot_freq(self.canvas.datalist, self.dataX, self.counter)
                     if self.counter >= MAXCOUNTER:
@@ -319,7 +335,8 @@ class MplCanvasWrapper(QtGui.QWidget):
                                 x['datay'].pop(0)
                     else:
                         self.counter += 1
-            time.sleep(INTERVAL * INTERVAL_COUNT)
+            time.sleep(60)
+
 
     def readfilename(self):
         flag = False
@@ -335,11 +352,21 @@ class MplCanvasWrapper(QtGui.QWidget):
             self.foldernamelist = foldernamelisttemp
             if not flag:
                 return False
-            time.sleep(10)
+            time.sleep(900)
             traversefolder(filepathtime, self.canvas.datalist,
                            self.canvas.fftnum, self.canvas.fftrepeat, self.canvas.fftfreq, self.canvas.fftwindow)
 
         return flag
+
+    @QtCore.pyqtSlot(bool)
+    def sendtoremote(self, isData):
+        global send_lock
+        if send_lock.acquire():
+            if isData:
+                self.client.senddata(self.canvas.datalist)
+            else:
+                self.client.senddata('E')
+            send_lock.release()
 
 
 def fft(path, fftnum, fftrepeat,fftwindow):
@@ -383,23 +410,24 @@ def fft(path, fftnum, fftrepeat,fftwindow):
 def findfreq(mag, fftnum, fftfreq):
     freq = []
     glo_max_amp = max(mag)
-    margin_freq = 0.5
+    margin_freq = 0.4
     margin_count = int(margin_freq * fftnum / fftfreq)
     max_amp = 0
-    index_max_amp = 0
     min_amp = glo_max_amp
     find_start = 0
     state = 'findmin'
-    for i in range(len(mag)):
+    limit_range = int(20 * fftnum / fftfreq)
+
+    for i in range(limit_range):
         if state == 'findmax':
-            if i - find_start > margin_count and mag[find_start] > 2 * sum(mag[find_start:i]) / (i - find_start):
+            if mag[i] > max_amp:
+                max_amp = mag[i]
+                find_start = i
+            elif i - find_start > margin_count and mag[find_start] > 3 * sum(mag[find_start:i]) / (i - find_start):
                 state = 'findmin'
                 freq.append(find_start)
                 find_start = i
                 max_amp = 0
-            elif mag[i] > max_amp:
-                max_amp = mag[i]
-                find_start = i
             else:
                 pass
         
@@ -439,13 +467,27 @@ def findfreq(mag, fftnum, fftfreq):
         for j in range(i + 1, choose_end):
             freq_dict = {}
             freq_dict['margin'] = abs(2 * freq[i] - freq[j])
-            freq_dict['i'] = i
+            freq_dict['i'] = freq[i]
             freq_main.append(freq_dict)
 
     freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
     for item in freq_sort_i:
-        if item['margin'] * fftfreq / fftnum < 1:
-            return freq[item['i']] * fftfreq / fftnum
+        if item['margin'] * fftfreq / fftnum < min(item['i'] * 0.1 * fftfreq / fftnum, 1):
+            return item['i'] * fftfreq / fftnum
+
+    # freq_main = []
+    # for i in range(choose_end - 1):
+    #     for j in range(i + 1, choose_end):
+    #         freq_dict = {}
+    #         freq_dict['margin'] = abs(1.5 * freq[i] - freq[j])
+    #         freq_dict['i'] = freq[i]
+    #         freq_main.append(freq_dict)
+    #
+    # freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
+    # for item in freq_sort_i:
+    #     if item['margin'] * fftfreq / fftnum < min(item['i'] * 0.1, 1):
+    #         if mag[item['i']] > 30:
+    #             return item['i'] * 0.5 * fftfreq / fftnum
 
     return freq[0] * fftfreq / fftnum
 
