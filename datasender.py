@@ -6,10 +6,13 @@ class tcpclient():
         self.__connected = False
         self.clientsocket = None
         self.needtosend = False
+        socket.setdefaulttimeout(1)
 
-    def connect(self, ip, port):
+    def setremote(self, ip, port):
         self.HOST = ip    # The remote host
         self.PORT = port              # The same port as used by the server
+
+    def connect(self):
         for res in socket.getaddrinfo(self.HOST, self.PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
             af, socktype, proto, canonname, sa = res
             try:
@@ -41,19 +44,21 @@ class tcpclient():
             self.clientsocket = None
 
     def senddata(self, data):
-        #buf = ['S', 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x40, 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 'E']
-        buf = '\x53\x01\x02\x03\x04\x05\x06\x40'
-        for xindex, x in enumerate(data):
-            if x['enabled']:
-                databuf = struct.pack('>h', int(x['datay'][-1] * 100))
-                buf += '\x01'
-                buf += databuf
-            else:
-                buf += '\x00'
-                buf += '\x00\x00'
-        buf += '\x45'
+        if type(data) == str:
+            buf = 'E'
+        else:
+            buf = '\x53\x01\x02\x03\x04\x05\x06\x40'
+            for xindex, x in enumerate(data):
+                if x['enabled']:
+                    databuf = struct.pack('>h', int(x['datay'][-1] * 100))
+                    buf += '\x01'
+                    buf += databuf
+                else:
+                    buf += '\x00'
+                    buf += '\x00\x00'
+            buf += '\x45'
         if not self.__connected:
-            if self.connect(self.HOST, self.PORT):
+            if self.connect():
                 try:
                     self.clientsocket.send(buf)
                 except socket.error, msg:
@@ -67,11 +72,4 @@ class tcpclient():
                 self.clientsocket.close()
                 self.clientsocket = None
                 self.__connected = False
-                if self.connect(self.HOST, self.PORT):
-                    try:
-                        self.clientsocket.send(buf)
-                    except socket.error, msg:
-                        self.clientsocket.close()
-                        self.clientsocket = None
-                        self.__connected = False
 

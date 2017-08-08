@@ -20,9 +20,9 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 filepath = "D:\data"
-fftnum = 4096
+fftnum = 2048
 fftfreq = 100.64
-fftrepeat = '1/2'
+fftrepeat = '3/4'
 fftwindow = u"矩形窗"
 
 # 0:none_checked 1:half_checked 2:checked
@@ -137,7 +137,7 @@ class Code_MainWindow(Ui_MainWindow):
     def Connect(self):
         global serverIP
         global serverPort
-        self.mplCanvas.client.connect(serverIP, serverPort)
+        self.mplCanvas.client.setremote(serverIP, serverPort)
         self.mplCanvas.client.needtosend = True
         self.actionConnect.setEnabled(False)
         self.actionCut.setEnabled(True)
