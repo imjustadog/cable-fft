@@ -454,16 +454,7 @@ def findfreq(mag, fftnum, fftfreq):
     elif choose_end == 1:
         return freq[0] * fftfreq / fftnum
 
-    # margin_min = fftnum
-    # freq_main = freq[0] * fftfreq / fftnum
-    # for i in range(choose_end - 1):
-    #     for j in range(i + 1, choose_end):
-    #         margin_current = abs(2 * freq[i] - freq[j])
-    #         if margin_current < margin_min:
-    #             margin_min = margin_current
-    #             freq_main = freq[i] * fftfreq / fftnum
-
-    for r in range(4):
+    for r in range(2):
         rate = float(r + 2)/(r + 1)
         freq_main = []
         for i in range(choose_end - 1):
@@ -471,12 +462,15 @@ def findfreq(mag, fftnum, fftfreq):
                 freq_dict = {}
                 freq_dict['margin'] = abs(rate * freq[i] - freq[j])
                 freq_dict['i'] = freq[i]
+                freq_dict['magi'] = mag[freq[i]]
+                freq_dict['magj'] = mag[freq[j]]
                 freq_main.append(freq_dict)
 
         freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
         for item in freq_sort_i:
             if item['margin'] * fftfreq / fftnum < 0.5 * (r + 2):
-                return item['i'] * fftfreq / fftnum / (r + 1)
+                if item['magi'] > 20 or item['magj'] > 20:
+                    return item['i'] * fftfreq / fftnum / (r + 1)
 
     return freq[0] * fftfreq / fftnum
 
