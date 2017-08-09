@@ -214,7 +214,7 @@ class MplCanvas(FigureCanvas):
         if self.curveObj_data is None:
             pass
         else:
-            datax = range(int(self.fftnum / 2.56))
+            datax = range(int(self.fftnum / 2))
             datax = [x * self.fftfreq / self.fftnum for x in datax]
             self.ax_data.set_xlim(datax[0], datax[-1])
             self.ax_data.set_ylim(0, max(self.mag))
@@ -401,7 +401,7 @@ def fft(path, fftnum, fftrepeat,fftwindow):
 
     mag = sum(np.array(magnitude)) / len(magnitude)
     mag = list(mag)
-    mag = mag[0: int(fftnum / 2.56)]
+    mag = mag[0: int(fftnum / 2)]
     mag[0] = 0
 
     return mag, datay
@@ -463,32 +463,20 @@ def findfreq(mag, fftnum, fftfreq):
     #             margin_min = margin_current
     #             freq_main = freq[i] * fftfreq / fftnum
 
-    freq_main = []
-    for i in range(choose_end - 1):
-        for j in range(i + 1, choose_end):
-            freq_dict = {}
-            freq_dict['margin'] = abs(2 * freq[i] - freq[j])
-            freq_dict['i'] = freq[i]
-            freq_main.append(freq_dict)
+    for r in range(4):
+        rate = float(r + 2)/(r + 1)
+        freq_main = []
+        for i in range(choose_end - 1):
+            for j in range(i + 1, choose_end):
+                freq_dict = {}
+                freq_dict['margin'] = abs(rate * freq[i] - freq[j])
+                freq_dict['i'] = freq[i]
+                freq_main.append(freq_dict)
 
-    freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
-    for item in freq_sort_i:
-        if item['margin'] * fftfreq / fftnum < min(item['i'] * 0.1 * fftfreq / fftnum, 1):
-            return item['i'] * fftfreq / fftnum
-
-    # freq_main = []
-    # for i in range(choose_end - 1):
-    #     for j in range(i + 1, choose_end):
-    #         freq_dict = {}
-    #         freq_dict['margin'] = abs(1.5 * freq[i] - freq[j])
-    #         freq_dict['i'] = freq[i]
-    #         freq_main.append(freq_dict)
-    #
-    # freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
-    # for item in freq_sort_i:
-    #     if item['margin'] * fftfreq / fftnum < min(item['i'] * 0.1, 1):
-    #         if mag[item['i']] > 30:
-    #             return item['i'] * 0.5 * fftfreq / fftnum
+        freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
+        for item in freq_sort_i:
+            if item['margin'] * fftfreq / fftnum < 0.5 * (r + 2):
+                return item['i'] * fftfreq / fftnum / (r + 1)
 
     return freq[0] * fftfreq / fftnum
 
