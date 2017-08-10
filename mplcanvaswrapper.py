@@ -467,9 +467,17 @@ def findfreq(mag, fftnum, fftfreq):
                 freq_main.append(freq_dict)
 
         freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
-        for item in freq_sort_i:
+        for index, item in enumerate(freq_sort_i):
             if item['margin'] * fftfreq / fftnum < 0.5 * (r + 2):
-                if item['magi'] > 20 or item['magj'] > 20:
+                if index < len(freq_sort_i) - 1:
+                    if item['magi'] * 2 < freq_sort_i[index + 1]['magi'] \
+                            and item['magj'] * 2 < freq_sort_i[index + 1]['magj']:
+                        continue
+                    elif item['magi'] < 15 or item['magj'] < 15:
+                        continue
+                    else:
+                        return item['i'] * fftfreq / fftnum / (r + 1)
+                else:
                     return item['i'] * fftfreq / fftnum / (r + 1)
 
     return freq[0] * fftfreq / fftnum
