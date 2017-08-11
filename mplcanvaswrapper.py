@@ -475,6 +475,8 @@ def findfreq(mag, fftnum, fftfreq):
                         continue
                     elif item['magi'] < 15 or item['magj'] < 15:
                         continue
+                    elif item['i'] * fftfreq / fftnum / (r + 1) < 4:
+                        continue
                     else:
                         return item['i'] * fftfreq / fftnum / (r + 1)
                 else:
