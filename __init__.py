@@ -20,10 +20,10 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 filepath = "D:\data"
-fftnum = 2048
+fftnum = 4096
 fftfreq = 100.64
 fftrepeat = '3/4'
-fftwindow = u"矩形窗"
+fftwindow = u"汉宁窗"
 
 # 0:none_checked 1:half_checked 2:checked
 glb_seriallist =\

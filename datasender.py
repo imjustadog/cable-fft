@@ -6,7 +6,7 @@ class tcpclient():
         self.__connected = False
         self.clientsocket = None
         self.needtosend = False
-        socket.setdefaulttimeout(1)
+        socket.setdefaulttimeout(0.1)
 
     def setremote(self, ip, port):
         self.HOST = ip    # The remote host

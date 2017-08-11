@@ -167,6 +167,9 @@ class MplCanvas(FigureCanvas):
             self.ax_freq.set_xlim(datax[0], datax[-1])
         else:
             self.ax_freq.set_xlim(datax[0], datax[0]+timedelta(hours=24))
+        #y_all = sum([x['datay'] for x in datalist if x['enabled']], [])
+        #self.ax_freq.set_ylim(min(y_all), max(y_all))
+        self.ax_freq.set_ylim(3, 7)
         ticklabels = self.ax_freq.xaxis.get_ticklabels()
         for tick in ticklabels:
             tick.set_rotation(25)
@@ -410,20 +413,20 @@ def fft(path, fftnum, fftrepeat,fftwindow):
 def findfreq(mag, fftnum, fftfreq):
     freq = []
     glo_max_amp = max(mag)
-    margin_freq = 0.4
+    margin_freq = 0.3
     margin_count = int(margin_freq * fftnum / fftfreq)
     max_amp = 0
     min_amp = glo_max_amp
     find_start = 0
     state = 'findmin'
-    limit_range = int(20 * fftnum / fftfreq)
+    limit_range = int(30 * fftnum / fftfreq)
 
     for i in range(limit_range):
         if state == 'findmax':
             if mag[i] > max_amp:
                 max_amp = mag[i]
                 find_start = i
-            elif i - find_start > margin_count and mag[find_start] > 3 * sum(mag[find_start:i]) / (i - find_start):
+            elif i - find_start > margin_count and mag[find_start] > 4 * sum(mag[find_start:i]) / (i - find_start):
                 state = 'findmin'
                 freq.append(find_start)
                 find_start = i
@@ -454,33 +457,32 @@ def findfreq(mag, fftnum, fftfreq):
     elif choose_end == 1:
         return freq[0] * fftfreq / fftnum
 
+    freq_main = []
     for r in range(2):
         rate = float(r + 2)/(r + 1)
-        freq_main = []
         for i in range(choose_end - 1):
             for j in range(i + 1, choose_end):
                 freq_dict = {}
-                freq_dict['margin'] = abs(rate * freq[i] - freq[j])
-                freq_dict['i'] = freq[i]
+                freq_dict['margin'] = abs(rate * freq[i] - freq[j]) * fftfreq / fftnum / (r + 2)
+                freq_dict['freq'] = freq[i] * fftfreq / fftnum / (r + 1)
+                freq_dict['i'] = freq[i] * fftfreq / fftnum
+                freq_dict['j'] = freq[j] * fftfreq / fftnum
                 freq_dict['magi'] = mag[freq[i]]
                 freq_dict['magj'] = mag[freq[j]]
                 freq_main.append(freq_dict)
 
-        freq_sort_i = sorted(freq_main, key=operator.itemgetter('i'))
-        for index, item in enumerate(freq_sort_i):
-            if item['margin'] * fftfreq / fftnum < 0.5 * (r + 2):
-                if index < len(freq_sort_i) - 1:
-                    if item['magi'] * 2 < freq_sort_i[index + 1]['magi'] \
-                            and item['magj'] * 2 < freq_sort_i[index + 1]['magj']:
-                        continue
-                    elif item['magi'] < 15 or item['magj'] < 15:
-                        continue
-                    elif item['i'] * fftfreq / fftnum / (r + 1) < 4:
-                        continue
-                    else:
-                        return item['i'] * fftfreq / fftnum / (r + 1)
+    freq_sort_margin = sorted(freq_main, key=operator.itemgetter('margin'))
+    for index, item in enumerate(freq_sort_margin):
+        if item['margin'] < 0.6:
+            if index < len(freq_sort_margin) - 1:
+                if item['magi'] < 15 or item['magj'] < 15:
+                    continue
+                elif item['freq'] < 4 or item['freq'] > 7:
+                    continue
                 else:
-                    return item['i'] * fftfreq / fftnum / (r + 1)
+                    return item['freq']
+            else:
+                return item['freq']
 
     return freq[0] * fftfreq / fftnum
 
