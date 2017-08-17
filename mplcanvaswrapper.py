@@ -405,7 +405,8 @@ def fft(path, fftnum, fftrepeat,fftwindow):
     mag = sum(np.array(magnitude)) / len(magnitude)
     mag = list(mag)
     mag = mag[0: int(fftnum / 2)]
-    mag[0] = 0
+    for i in range(5):
+        mag[i] = 0
 
     return mag, datay
 
@@ -455,7 +456,16 @@ def findfreq(mag, fftnum, fftfreq):
         return 0
 
     elif choose_end == 1:
-        return freq[0] * fftfreq / fftnum
+        result = freq[0] * fftfreq / fftnum
+        if result < 7 and result > 4:
+            return result
+        for s in range(5):
+            if result > 7:
+                if result / (s + 1) < 7 and result / (s + 1) > 4:
+                    return result / (s + 1)
+            elif result < 4:
+                if result * (s + 1) > 4 and result * (s + 1) < 7:
+                    return result * (s + 1)
 
     freq_main = []
     for r in range(2):
@@ -474,17 +484,27 @@ def findfreq(mag, fftnum, fftfreq):
     freq_sort_margin = sorted(freq_main, key=operator.itemgetter('margin'))
     for index, item in enumerate(freq_sort_margin):
         if item['margin'] < 0.6:
-            if index < len(freq_sort_margin) - 1:
-                if item['magi'] < 15 or item['magj'] < 15:
-                    continue
-                elif item['freq'] < 4 or item['freq'] > 7:
-                    continue
-                else:
-                    return item['freq']
+            if item['magi'] < 15 and item['magj'] < 15:
+                continue
+            elif item['freq'] < 4 or item['freq'] > 7:
+                continue
             else:
                 return item['freq']
 
-    return freq[0] * fftfreq / fftnum
+    result = freq[0] * fftfreq / fftnum
+
+    if result < 7 and result > 4:
+        return result
+
+    for s in range(5):
+        if result > 7:
+            if (result/(s+1)) < 7 and (result/(s+1)) > 4:
+                return (result/(s+1))
+        elif result < 4:
+            if (result*(s+1))>4 and (result*(s + 1)) < 7:
+                return (result*(s+1))
+
+    return result
 
 
 def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq, fftwindow):
@@ -495,7 +515,12 @@ def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq, fftwindow
                 continue
             mag, ty = fft(path, fftnum, fftrepeat, fftwindow)
             freq_result = findfreq(mag, fftnum, fftfreq)
-            x['datay'].append(freq_result)
+            if freq_result < 7 and freq_result > 4:
+                x['datay'].append(freq_result)
+            elif x['datay'] == []:
+                x['datay'].append(freq_result)
+            else:
+                x['datay'].append(x['datay'][-1])
 
 
 def clear_data_annotate(self):
