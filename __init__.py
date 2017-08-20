@@ -20,9 +20,9 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 filepath = "D:\data"
-fftnum = 4096
+fftnum = 8192
 fftfreq = 100.64
-fftrepeat = '3/4'
+fftrepeat = '5/6'
 fftwindow = u"汉宁窗"
 
 # 0:none_checked 1:half_checked 2:checked

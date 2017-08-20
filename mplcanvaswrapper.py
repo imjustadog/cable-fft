@@ -414,20 +414,22 @@ def fft(path, fftnum, fftrepeat,fftwindow):
 def findfreq(mag, fftnum, fftfreq):
     freq = []
     glo_max_amp = max(mag)
-    margin_freq = 0.3
-    margin_count = int(margin_freq * fftnum / fftfreq)
+    margin_freq_down = 0.2
+    margin_count_down = int(margin_freq_down * fftnum / fftfreq)
+    margin_freq_up = 0.4
+    margin_count_up = int(margin_freq_up * fftnum / fftfreq)
     max_amp = 0
     min_amp = glo_max_amp
     find_start = 0
     state = 'findmin'
-    limit_range = int(30 * fftnum / fftfreq)
+    limit_range = int(21 * fftnum / fftfreq)
 
     for i in range(limit_range):
         if state == 'findmax':
             if mag[i] > max_amp:
                 max_amp = mag[i]
                 find_start = i
-            elif i - find_start > margin_count and mag[find_start] > 4 * sum(mag[find_start:i]) / (i - find_start):
+            elif i - find_start > margin_count_up and mag[find_start] > 3.8 * sum(mag[find_start:i]) / (i - find_start):
                 state = 'findmin'
                 freq.append(find_start)
                 find_start = i
@@ -437,7 +439,7 @@ def findfreq(mag, fftnum, fftfreq):
                 pass
         
         elif state == 'findmin':
-            if i - find_start > margin_count:
+            if i - find_start > margin_count_down:
                 state = 'findmax'
                 find_start = i
                 min_amp = glo_max_amp
@@ -481,10 +483,12 @@ def findfreq(mag, fftnum, fftfreq):
                 freq_dict['magj'] = mag[freq[j]]
                 freq_main.append(freq_dict)
 
+    max_mag = max(freq_main, key=operator.itemgetter('magi'))['magi']
+    mag_limit = max_mag / 10.0
     freq_sort_margin = sorted(freq_main, key=operator.itemgetter('margin'))
     for index, item in enumerate(freq_sort_margin):
-        if item['margin'] < 0.6:
-            if item['magi'] < 15 and item['magj'] < 15:
+        if item['margin'] < 0.45:
+            if item['magi'] < mag_limit or item['magj'] < mag_limit:
                 continue
             elif item['freq'] < 4 or item['freq'] > 7:
                 continue
@@ -520,7 +524,7 @@ def traversefolder(filepathtime, datalist, fftnum, fftrepeat, fftfreq, fftwindow
             elif x['datay'] == []:
                 x['datay'].append(freq_result)
             else:
-                x['datay'].append(x['datay'][-1])
+                x['datay'].append(x['datay'][-1] + 0.01)
 
 
 def clear_data_annotate(self):
