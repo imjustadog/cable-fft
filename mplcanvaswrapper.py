@@ -338,7 +338,7 @@ class MplCanvasWrapper(QtGui.QWidget):
                                 x['datay'].pop(0)
                     else:
                         self.counter += 1
-            time.sleep(60)
+            time.sleep(1)
 
 
     def readfilename(self):
@@ -355,7 +355,7 @@ class MplCanvasWrapper(QtGui.QWidget):
             self.foldernamelist = foldernamelisttemp
             if not flag:
                 return False
-            time.sleep(900)
+            time.sleep(1)
             traversefolder(filepathtime, self.canvas.datalist,
                            self.canvas.fftnum, self.canvas.fftrepeat, self.canvas.fftfreq, self.canvas.fftwindow)
 
